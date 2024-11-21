@@ -1,0 +1,119 @@
+SLURM Demo
+
+#squeue  - show status of jobs in queue
+#sinfo   - show status of compute nodes 
+#sbatch  - submit a job script 
+## ex/ submit.sh
+#srun    - run a command on allocated compute nodes                                                                                   
+#scancel - delete a job                                                                                                               
+#sbatch  - submit a job script                                                                                                        
+#salloc  - allocate compute nodes for interactive use                                                                                 
+#Use #SBATCH -A account name in your script  
+
+0. $sinfo
+sinfo --partition=hm
+sinfo --states=r
+sinfo --states=p
+$sinfo --reservation
+
+1. SLURM interactive job
+
+$ srun -N 1 -n 1 -c 1 --mem=2gb -t 20 --pty bash             
+srun: job 74643 queued and waiting for resources
+srun: job 74643 has been allocated resources
+
+$hostname
+//observe the hostname
+$ echo ${SLURM_JOBID}
+74646
+$exit
+
+2. salloc 
+$ salloc --ntasks=4 --time=10 bash
+$ hostname
+gpu008
+[karuna@gpu008 ~]$ echo $SLURM_JOBID
+75144
+[karuna@gpu008 ~]$ exit
+
+
+3. SLURM Script
+sbatch submit.sh
+//observe the output res.txt
+
+## ex/ filename submit1.sh
+
+#!/bin/bash
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=1gb
+#SBATCH -t 20
+#SBATCH -o %j.out
+#SBATCH -e %j.err
+
+hostname
+
+echo ${SLURM_JOBID}
+
+4.  squeue
+List all current jobs for a user:
+squeue -u <username>
+
+List all running jobs for a user:
+squeue -u <username> -t RUNNING
+
+List all pending jobs for a user:
+squeue -u <username> -t PENDING
+
+List detailed information for a job (useful for troubleshooting):
+scontrol show jobid -dd <jobid>
+
+
+5. scancel
+
+To cancel one job:
+scancel <jobid>
+
+To cancel all the jobs for a user:
+scancel -u <username>
+
+To cancel all the pending jobs for a user:
+scancel -t PENDING -u <username>
+
+To cancel one or more jobs by name:
+scancel --name myJobName
+
+
+//ex
+sbatch submit.sh
+sacct -u karuna
+scancel -u karuna
+sacct -u karuna     //job is cancelled
+
+
+6. Useful commands
+
+$scontrol show partition standard
+
+$scontrol show job jobid
+
+7. 
+sacct -u karuna
+sacct -j 80949
+sacct -p standard
+
+8.
+sinfo - report system status
+sinfo -Node
+sinfo -p debug
+
+9. sbatch sampleMpi1.sh
+
+
+
+
+
+
+
+
